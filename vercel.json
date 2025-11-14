@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "freeflix-frontend": {
+      "rootDirectory": "Frontend"
+    }
+  }
+}
