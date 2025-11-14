@@ -1,0 +1,264 @@
+/* 🌙 Base Layout */
+body {
+  background: #0d0d0d;
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.app {
+  max-width: 1100px;
+  margin: auto;
+  padding: 1rem;
+}
+
+/* 🎬 Header */
+header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+header h1 {
+  font-size: 2.2rem;
+  color: #ff4444;
+  letter-spacing: 1px;
+}
+
+/* 🔎 Search Bar */
+.search-bar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.8rem;
+}
+
+.search-bar input {
+  padding: 0.5rem 0.8rem;
+  width: 60%;
+  max-width: 400px;
+  border-radius: 6px;
+  border: none;
+  background: #222;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+  outline: none;
+  background: #292929;
+  border: 1px solid #ff4444;
+}
+
+.search-bar button {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.search-bar button:hover {
+  background: #ff2222;
+  transform: scale(1.05);
+}
+
+/* 🌐 Controls Section */
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  margin-top: 1rem;
+}
+
+select {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  background: #222;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+select:hover {
+  background: #333;
+}
+
+/* 🎭 Mood Buttons */
+.moods {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.moods button {
+  padding: 0.5rem 0.9rem;
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.moods button.active {
+  background: #ff4444;
+  font-weight: 600;
+  transform: scale(1.05);
+}
+
+.moods button:hover {
+  background: #ff2222;
+}
+
+/* ⏳ Loading & Error */
+.loading,
+.error {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 3rem;
+  color: #bbb;
+}
+
+.error {
+  color: #ff6666;
+}
+
+/* 🎞 Movie Grid */
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-bottom: 1rem;
+}
+
+.movie-card {
+  background: #1a1a1a;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(255, 68, 68, 0.2);
+}
+
+.movie-card img {
+  width: 100%;
+  height: 270px;
+  object-fit: cover;
+  display: block;
+  background: #222;
+  cursor: pointer;
+}
+
+.info {
+  padding: 0.6rem;
+}
+
+.info h3 {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+  color: #fff;
+}
+
+.info p {
+  margin: 0.2rem 0;
+  font-size: 0.85rem;
+  color: #bbb;
+}
+
+.info .plot {
+  color: #999;
+  font-style: italic;
+}
+
+/* ❤️ 👀 Like & Watch Buttons */
+.btn-like,
+.btn-watch {
+  flex: 1;
+  background: #333;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.btn-like:hover {
+  background: #ff4444;
+  transform: scale(1.1);
+}
+
+.btn-watch:hover {
+  background: #00c853;
+  transform: scale(1.1);
+}
+
+/* 👤 User Info Buttons */
+header button {
+  background: #ff4444;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+header button:hover {
+  background: #ff2222;
+  transform: scale(1.05);
+}
+
+/* ⚙️ Footer */
+footer {
+  text-align: center;
+  margin-top: 2rem;
+  color: #888;
+  font-size: 0.9rem;
+  border-top: 1px solid #222;
+  padding-top: 1rem;
+}
+
+footer span {
+  color: #ff4444;
+}
+
+/* 📱 Responsive Design */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .search-bar input {
+    width: 80%;
+  }
+
+  .movie-card img {
+    height: 240px;
+  }
+
+  .moods {
+    gap: 0.4rem;
+  }
+
+  .btn-like,
+  .btn-watch {
+    font-size: 0.9rem;
+  }
+}
