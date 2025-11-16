@@ -14,7 +14,7 @@ export default function LoginPage({ onLoginSuccess }) {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
       // Send to backend to get token (create account if needed)
-      const res = await axios.post("http://localhost:5050/auth/google", {
+      const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/auth/google`, {
         name: user.displayName,
         email: user.email,
       });
