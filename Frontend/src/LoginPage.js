@@ -10,10 +10,12 @@ export default function LoginPage({ onLoginSuccess }) {
   const [name, setName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
 
-  // HANDLE GOOGLE RETURN
   useEffect(() => {
-    getRedirectResult(auth)
-      .then(async (result) => {
+    async function checkRedirect() {
+      try {
+        const result = await getRedirectResult(auth);
+        console.log("REDIRECT RESULT:", result);
+
         if (!result) return;
 
         const user = result.user;
@@ -28,28 +30,41 @@ export default function LoginPage({ onLoginSuccess }) {
 
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
+
         onLoginSuccess(res.data.user);
-      })
-      .catch((err) => console.error("Google redirect error:", err));
+      } catch (err) {
+        console.error("Redirect error:", err);
+      }
+    }
+
+    checkRedirect();
   }, [onLoginSuccess]);
 
   const handleGoogleLogin = () => {
+    console.log("REDIRECTING TO GOOGLE...");
     signInWithRedirect(auth, googleProvider);
   };
 
   const handleEmailAuth = async (e) => {
     e.preventDefault();
-    const endpoint = isSignup
-      ? `${process.env.REACT_APP_BACKEND_URL}/auth/signup`
-      : `${process.env.REACT_APP_BACKEND_URL}/auth/login`;
+    try {
+      const endpoint = isSignup
+        ? `${process.env.REACT_APP_BACKEND_URL}/auth/signup`
+        : `${process.env.REACT_APP_BACKEND_URL}/auth/login`;
 
-    const payload = isSignup ? { name, email, password } : { email, password };
+      const payload = isSignup
+        ? { name, email, password }
+        : { email, password };
 
-    const res = await axios.post(endpoint, payload);
+      const res = await axios.post(endpoint, payload);
 
-    localStorage.setItem("token", res.data.token);
-    localStorage.setItem("user", JSON.stringify(res.data.user));
-    onLoginSuccess(res.data.user);
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+      onLoginSuccess(res.data.user);
+    } catch (err) {
+      console.error("Email login error:", err);
+      alert("Authentication failed.");
+    }
   };
 
   return (
@@ -69,7 +84,6 @@ export default function LoginPage({ onLoginSuccess }) {
               style={styles.input}
             />
           )}
-
           <input
             type="email"
             placeholder="Email"
@@ -78,7 +92,6 @@ export default function LoginPage({ onLoginSuccess }) {
             required
             style={styles.input}
           />
-
           <input
             type="password"
             placeholder="Password"
@@ -87,7 +100,6 @@ export default function LoginPage({ onLoginSuccess }) {
             required
             style={styles.input}
           />
-
           <button type="submit" style={styles.btn}>
             {isSignup ? "Sign Up" : "Login"}
           </button>
@@ -113,7 +125,6 @@ export default function LoginPage({ onLoginSuccess }) {
   );
 }
 
-// STYLES
 const styles = {
   container: { textAlign: "center", paddingTop: "4rem", color: "white", backgroundColor: "#000", minHeight: "100vh" },
   logo: { color: "#e50914", fontSize: "2.5rem", marginBottom: "2rem" },
@@ -124,5 +135,5 @@ const styles = {
   toggle: { marginTop: "1rem" },
   link: { color: "#e50914", cursor: "pointer", fontWeight: "bold" },
   hr: { margin: "1.5rem 0", border: "0.5px solid #333" },
-  googleBtn: { backgroundColor: "#4285F4", border: "none", color: "white", padding: "10px 15px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" }
+  googleBtn: { backgroundColor: "#4285F4", border: "none", color: "white", padding: "10px 15px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" },
 };
