@@ -10,14 +10,32 @@ export default function LoginPage({ onLoginSuccess }) {
   const [name, setName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
 
+  // -------------------------------
+  // HANDLE GOOGLE REDIRECT RESULT
+  // -------------------------------
   useEffect(() => {
     async function checkRedirect() {
+      console.log("CHECKING REDIRECT...");
+
+      // ⭐ Prevent infinite redirect loop
+      const wasRedirecting = sessionStorage.getItem("redirecting");
+
       try {
         const result = await getRedirectResult(auth);
         console.log("REDIRECT RESULT:", result);
 
-        if (!result) return;
+        // If result is null AND we were redirecting → show error
+        if (!result) {
+          if (wasRedirecting === "1") {
+            console.warn("Redirect result NULL but redirect marker was set → Firebase lost session");
+            sessionStorage.removeItem("redirecting");
+          }
+          return;
+        }
 
+        sessionStorage.removeItem("redirecting");
+
+        // Success
         const user = result.user;
 
         const res = await axios.post(
@@ -32,19 +50,31 @@ export default function LoginPage({ onLoginSuccess }) {
         localStorage.setItem("user", JSON.stringify(res.data.user));
 
         onLoginSuccess(res.data.user);
+
       } catch (err) {
         console.error("Redirect error:", err);
+        sessionStorage.removeItem("redirecting");
       }
     }
 
     checkRedirect();
   }, [onLoginSuccess]);
 
+  // -------------------------------
+  // START GOOGLE LOGIN
+  // -------------------------------
   const handleGoogleLogin = () => {
     console.log("REDIRECTING TO GOOGLE...");
+
+    // ⭐ CRITICAL LINE — prevents redirect loop
+    sessionStorage.setItem("redirecting", "1");
+
     signInWithRedirect(auth, googleProvider);
   };
 
+  // -------------------------------
+  // EMAIL/PASSWORD LOGIN
+  // -------------------------------
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     try {
@@ -52,9 +82,7 @@ export default function LoginPage({ onLoginSuccess }) {
         ? `${process.env.REACT_APP_BACKEND_URL}/auth/signup`
         : `${process.env.REACT_APP_BACKEND_URL}/auth/login`;
 
-      const payload = isSignup
-        ? { name, email, password }
-        : { email, password };
+      const payload = isSignup ? { name, email, password } : { email, password };
 
       const res = await axios.post(endpoint, payload);
 
@@ -100,6 +128,7 @@ export default function LoginPage({ onLoginSuccess }) {
             required
             style={styles.input}
           />
+
           <button type="submit" style={styles.btn}>
             {isSignup ? "Sign Up" : "Login"}
           </button>
@@ -107,10 +136,7 @@ export default function LoginPage({ onLoginSuccess }) {
 
         <p style={styles.toggle}>
           {isSignup ? "Already have an account?" : "New here?"}{" "}
-          <span
-            onClick={() => setIsSignup(!isSignup)}
-            style={styles.link}
-          >
+          <span onClick={() => setIsSignup(!isSignup)} style={styles.link}>
             {isSignup ? "Login" : "Sign Up"}
           </span>
         </p>
