@@ -15,27 +15,30 @@ export default function LoginPage({ onLoginSuccess }) {
   // -------------------------------
   useEffect(() => {
     async function checkRedirect() {
-      console.log("CHECKING REDIRECT...");
-
-      // ⭐ Prevent infinite redirect loop
+      // ⭐ Only check if we were actually redirecting
       const wasRedirecting = sessionStorage.getItem("redirecting");
+      
+      if (!wasRedirecting) {
+        console.log("Not checking redirect - no redirect in progress");
+        return;
+      }
+
+      console.log("CHECKING REDIRECT...");
 
       try {
         const result = await getRedirectResult(auth);
         console.log("REDIRECT RESULT:", result);
 
-        // If result is null AND we were redirecting → show error
+        // Clear the flag immediately
+        sessionStorage.removeItem("redirecting");
+
+        // If result is null, redirect was cancelled or failed
         if (!result) {
-          if (wasRedirecting === "1") {
-            console.warn("Redirect result NULL but redirect marker was set → Firebase lost session");
-            sessionStorage.removeItem("redirecting");
-          }
+          console.warn("Redirect result was null");
           return;
         }
 
-        sessionStorage.removeItem("redirecting");
-
-        // Success
+        // Success - send to backend
         const user = result.user;
 
         const res = await axios.post(
