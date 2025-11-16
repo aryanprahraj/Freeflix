@@ -2,19 +2,17 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDI48i3W1op63KMGHK6cjHDeFMH3y9QNaU",
+export const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "freeflix-45feb.firebaseapp.com",
   projectId: "freeflix-45feb",
   storageBucket: "freeflix-45feb.appspot.com",
-  messagingSenderId: "154261774339",
-  appId: "1:154261774339:web:4c7946a303e36efdbdee36",
-  measurementId: "G-XK59YZ7CL0"
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: "select_account" });
-
-export default app;
