@@ -1,7 +1,7 @@
 // src/LoginPage.js
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "./firebaseConfig";
 
 export default function LoginPage({ onLoginSuccess }) {
@@ -11,68 +11,34 @@ export default function LoginPage({ onLoginSuccess }) {
   const [isSignup, setIsSignup] = useState(false);
 
   // -------------------------------
-  // HANDLE GOOGLE REDIRECT RESULT
+  // GOOGLE LOGIN WITH POPUP
   // -------------------------------
-  useEffect(() => {
-    async function checkRedirect() {
-      // ⭐ Only check if we were actually redirecting
-      const wasRedirecting = sessionStorage.getItem("redirecting");
+  const handleGoogleLogin = async () => {
+    try {
+      console.log("Starting Google popup login...");
       
-      if (!wasRedirecting) {
-        console.log("Not checking redirect - no redirect in progress");
-        return;
-      }
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
 
-      console.log("CHECKING REDIRECT...");
+      console.log("Google user:", user);
 
-      try {
-        const result = await getRedirectResult(auth);
-        console.log("REDIRECT RESULT:", result);
-
-        // Clear the flag immediately
-        sessionStorage.removeItem("redirecting");
-
-        // If result is null, redirect was cancelled or failed
-        if (!result) {
-          console.warn("Redirect result was null");
-          return;
+      // Send to backend
+      const res = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL || "http://localhost:5050"}/auth/google`,
+        {
+          name: user.displayName,
+          email: user.email,
         }
+      );
 
-        // Success - send to backend
-        const user = result.user;
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-        const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/auth/google`,
-          {
-            name: user.displayName,
-            email: user.email,
-          }
-        );
-
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-
-        onLoginSuccess(res.data.user);
-
-      } catch (err) {
-        console.error("Redirect error:", err);
-        sessionStorage.removeItem("redirecting");
-      }
+      onLoginSuccess(res.data.user);
+    } catch (err) {
+      console.error("Google login error:", err);
+      alert("Google login failed: " + err.message);
     }
-
-    checkRedirect();
-  }, [onLoginSuccess]);
-
-  // -------------------------------
-  // START GOOGLE LOGIN
-  // -------------------------------
-  const handleGoogleLogin = () => {
-    console.log("REDIRECTING TO GOOGLE...");
-
-    // ⭐ CRITICAL LINE — prevents redirect loop
-    sessionStorage.setItem("redirecting", "1");
-
-    signInWithRedirect(auth, googleProvider);
   };
 
   // -------------------------------
