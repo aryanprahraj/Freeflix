@@ -1,9 +1,9 @@
+// src/firebaseConfig.js
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-// 🔥 DO NOT USE process.env HERE — USE THE REAL VALUES
-const firebaseConfig = {
-  apiKey: "AIzaSyDI48i3W1op63KMGHK6cjHDeFMH3y9QNaU",
+export const firebaseConfig = {
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "freeflix-45feb.firebaseapp.com",
   projectId: "freeflix-45feb",
   storageBucket: "freeflix-45feb.appspot.com",
