@@ -1,9 +1,7 @@
+// Frontend/src/LoginPage.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  signInWithRedirect,
-  getRedirectResult,
-} from "firebase/auth";
+import { signInWithRedirect, getRedirectResult } from "firebase/auth";
 import { auth, googleProvider } from "./firebaseConfig";
 
 export default function LoginPage({ onLoginSuccess }) {
@@ -12,42 +10,50 @@ export default function LoginPage({ onLoginSuccess }) {
   const [name, setName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
 
-  // -----------------------------------------
-  // HANDLE GOOGLE REDIRECT RESULT
-  // -----------------------------------------
   useEffect(() => {
+    console.log("[LoginPage] useEffect: checking redirect result...");
     getRedirectResult(auth)
       .then(async (result) => {
-        if (!result) return;
+        console.log("[LoginPage] getRedirectResult -> result:", result);
+        if (!result) {
+          console.log("[LoginPage] No redirect result (user not returned).");
+          return;
+        }
 
-        const user = result.user;
-
-        const res = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/auth/google`,
-          {
-            name: user.displayName,
+        try {
+          const user = result.user;
+          console.log("[LoginPage] Redirect user:", {
+            uid: user.uid,
             email: user.email,
-          }
-        );
+            name: user.displayName,
+          });
 
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+          const res = await axios.post(
+            `${process.env.REACT_APP_BACKEND_URL}/auth/google`,
+            { name: user.displayName, email: user.email },
+            { timeout: 10000 }
+          );
 
-        onLoginSuccess(res.data.user);
+          console.log("[LoginPage] backend /auth/google response:", res.data);
+          localStorage.setItem("token", res.data.token);
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+          onLoginSuccess(res.data.user);
+        } catch (err) {
+          console.error("[LoginPage] Error while sending backend request:", err);
+          alert("Login succeeded with Google but backend request failed. Check console.");
+        }
       })
-      .catch((err) => console.error(err));
-  }, []);
+      .catch((err) => {
+        console.error("[LoginPage] getRedirectResult error:", err);
+        alert("getRedirectResult error — check console.");
+      });
+  }, [onLoginSuccess]);
 
-  // -----------------------------------------
-  // START GOOGLE LOGIN (REDIRECT MODE)
-  // -----------------------------------------
   const handleGoogleLogin = () => {
+    console.log("[LoginPage] handleGoogleLogin: starting signInWithRedirect");
     signInWithRedirect(auth, googleProvider);
   };
 
-  // -----------------------------------------
-  // EMAIL/PASSWORD LOGIN
-  // -----------------------------------------
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     try {
@@ -55,19 +61,15 @@ export default function LoginPage({ onLoginSuccess }) {
         ? `${process.env.REACT_APP_BACKEND_URL}/auth/signup`
         : `${process.env.REACT_APP_BACKEND_URL}/auth/login`;
 
-      const payload = isSignup
-        ? { name, email, password }
-        : { email, password };
-
-      const res = await axios.post(endpoint, payload);
+      const payload = isSignup ? { name, email, password } : { email, password };
+      const res = await axios.post(endpoint, payload, { timeout: 10000 });
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
-
       onLoginSuccess(res.data.user);
     } catch (err) {
-      console.error(err);
-      alert("Authentication failed. Check credentials.");
+      console.error("[LoginPage] Email auth error:", err);
+      alert("Authentication failed. Check console.");
     }
   };
 
@@ -79,118 +81,38 @@ export default function LoginPage({ onLoginSuccess }) {
 
         <form onSubmit={handleEmailAuth} style={styles.form}>
           {isSignup && (
-            <input
-              type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              style={styles.input}
-            />
+            <input type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} required style={styles.input} />
           )}
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={styles.input}
-          />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required style={styles.input} />
+          <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required style={styles.input} />
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={styles.input}
-          />
-
-          <button type="submit" style={styles.btn}>
-            {isSignup ? "Sign Up" : "Login"}
-          </button>
+          <button type="submit" style={styles.btn}>{isSignup ? "Sign Up" : "Login"}</button>
         </form>
 
         <p style={styles.toggle}>
           {isSignup ? "Already have an account?" : "New here?"}{" "}
-          <span
-            onClick={() => setIsSignup(!isSignup)}
-            style={styles.link}
-          >
+          <span onClick={() => setIsSignup(!isSignup)} style={styles.link}>
             {isSignup ? "Login" : "Sign Up"}
           </span>
         </p>
 
         <hr style={styles.hr} />
-
-        <button
-          onClick={handleGoogleLogin}
-          style={styles.googleBtn}
-        >
-          Sign in with Google
-        </button>
+        <button onClick={handleGoogleLogin} style={styles.googleBtn}>Sign in with Google</button>
       </div>
     </div>
   );
 }
 
 const styles = {
-  container: {
-    textAlign: "center",
-    paddingTop: "4rem",
-    color: "white",
-    backgroundColor: "#000",
-    minHeight: "100vh",
-  },
-  logo: {
-    color: "#e50914",
-    fontSize: "2.5rem",
-    marginBottom: "2rem",
-  },
-  card: {
-    background: "#111",
-    display: "inline-block",
-    padding: "2rem",
-    borderRadius: "12px",
-    width: "320px",
-    boxShadow: "0 0 10px rgba(255,255,255,0.06)",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-  },
-  input: {
-    padding: "10px",
-    borderRadius: "6px",
-    border: "1px solid #333",
-    backgroundColor: "#222",
-    color: "white",
-  },
-  btn: {
-    backgroundColor: "#e50914",
-    border: "none",
-    color: "white",
-    padding: "10px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
+  container: { textAlign: "center", paddingTop: "4rem", color: "white", backgroundColor: "#000", minHeight: "100vh" },
+  logo: { color: "#e50914", fontSize: "2.5rem", marginBottom: "2rem" },
+  card: { background: "#111", display: "inline-block", padding: "2rem", borderRadius: "12px", width: "320px", boxShadow: "0 0 10px rgba(255,255,255,0.06)" },
+  form: { display: "flex", flexDirection: "column", gap: "1rem" },
+  input: { padding: "10px", borderRadius: "6px", border: "1px solid #333", backgroundColor: "#222", color: "white" },
+  btn: { backgroundColor: "#e50914", border: "none", color: "white", padding: "10px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" },
   toggle: { marginTop: "1rem" },
-  link: {
-    color: "#e50914",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
+  link: { color: "#e50914", cursor: "pointer", fontWeight: "bold" },
   hr: { margin: "1.5rem 0", border: "0.5px solid #333" },
-  googleBtn: {
-    backgroundColor: "#4285F4",
-    border: "none",
-    color: "white",
-    padding: "10px 15px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
+  googleBtn: { backgroundColor: "#4285F4", border: "none", color: "white", padding: "10px 15px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" },
 };
