@@ -3,7 +3,7 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: "freeflix-45feb.firebaseapp.com",
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,   // <<< FIXED
   projectId: "freeflix-45feb",
   storageBucket: "freeflix-45feb.appspot.com",
   messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
