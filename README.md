@@ -2,8 +2,6 @@
 
 <div align="center">
 
-![FreeFlix Banner](https://img.shields.io/badge/FreeFlix-Watch%20Free%20Movies-red?style=for-the-badge&logo=netflix)
-
 **Stream. Discover. Enjoy. All for FREE! 🍿**
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-freeflix--app.vercel.app-brightgreen?style=for-the-badge&logo=vercel)](https://freeflix-app.vercel.app)
@@ -184,7 +182,7 @@ This project is open source and available under the [MIT License](LICENSE).
 Built with ❤️ by [Aryan Prahraj](https://github.com/aryanprahraj)
 
 **Contact:**
-- 📧 Email: aryanpraharaj567@gmail.com
+- 📧 Email: aryanprahraj@gmail.com
 - 💼 GitHub: [@aryanprahraj](https://github.com/aryanprahraj)
 
 ---
