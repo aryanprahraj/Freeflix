@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import "./App.css";
 import LoginPage from "./LoginPage";
-const BACKEND = "http://localhost:5050";
+const BACKEND = process.env.REACT_APP_BACKEND_URL;
 
 export default function App() {
   const [user, setUser] = useState(null);
