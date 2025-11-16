@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { signInWithPopup } from "firebase/auth";
+import {
+  signInWithRedirect,
+  getRedirectResult,
+} from "firebase/auth";
 import { auth, googleProvider } from "./firebaseConfig";
 
 export default function LoginPage({ onLoginSuccess }) {
@@ -9,35 +12,42 @@ export default function LoginPage({ onLoginSuccess }) {
   const [name, setName] = useState("");
   const [isSignup, setIsSignup] = useState(false);
 
-  // -------------------------
-  // GOOGLE LOGIN
-  // -------------------------
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+  // -----------------------------------------
+  // HANDLE GOOGLE REDIRECT RESULT
+  // -----------------------------------------
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (!result) return;
 
-      const res = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/auth/google`,
-        {
-          name: user.displayName,
-          email: user.email,
-        }
-      );
+        const user = result.user;
 
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
+        const res = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/auth/google`,
+          {
+            name: user.displayName,
+            email: user.email,
+          }
+        );
 
-      onLoginSuccess(res.data.user);
-    } catch (err) {
-      console.error(err);
-      alert("Google login failed");
-    }
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+
+        onLoginSuccess(res.data.user);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  // -----------------------------------------
+  // START GOOGLE LOGIN (REDIRECT MODE)
+  // -----------------------------------------
+  const handleGoogleLogin = () => {
+    signInWithRedirect(auth, googleProvider);
   };
 
-  // -------------------------
-  // EMAIL + PASSWORD LOGIN / SIGNUP
-  // -------------------------
+  // -----------------------------------------
+  // EMAIL/PASSWORD LOGIN
+  // -----------------------------------------
   const handleEmailAuth = async (e) => {
     e.preventDefault();
     try {
@@ -61,9 +71,6 @@ export default function LoginPage({ onLoginSuccess }) {
     }
   };
 
-  // -------------------------
-  // UI
-  // -------------------------
   return (
     <div style={styles.container}>
       <h1 style={styles.logo}>🎬 Freeflix</h1>
@@ -128,9 +135,6 @@ export default function LoginPage({ onLoginSuccess }) {
   );
 }
 
-// -------------------------
-// STYLES
-// -------------------------
 const styles = {
   container: {
     textAlign: "center",
@@ -190,4 +194,3 @@ const styles = {
     fontWeight: "bold",
   },
 };
-
