@@ -123,7 +123,7 @@ export default function LoginPage({ onLoginSuccess }) {
 const styles = {
   container: { position: "fixed", top: 0, left: 0, width: "100%", height: "100vh", textAlign: "center", color: "white", backgroundImage: "url('/wow.jpg')", backgroundSize: "cover", backgroundPosition: "center 20%", backgroundAttachment: "fixed", display: "flex", alignItems: "center", justifyContent: "center" },
   logo: { color: "#e50914", fontSize: "2.5rem", marginBottom: "1.5rem", marginTop: 0, backgroundColor: "#000", padding: "1rem 1.5rem", borderRadius: "8px" },
-  card: { background: "rgba(0, 0, 0, 0)", display: "inline-block", padding: "2rem", borderRadius: "12px", width: "320px", boxShadow: "none", backdropFilter: "none", border: "none" },
+  card: { background: "rgba(0, 0, 0, 0)", display: "inline-block", padding: "2rem", borderRadius: "12px", width: "320px", boxShadow: "0 0 30px rgba(255,255,255,0.1)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.08)" },
   form: { display: "flex", flexDirection: "column", gap: "1rem" },
   input: { padding: "10px", borderRadius: "6px", border: "1px solid #333", backgroundColor: "#222", color: "white" },
   btn: { backgroundColor: "#e50914", border: "none", color: "white", padding: "10px", borderRadius: "6px", cursor: "pointer", fontWeight: "bold" },
