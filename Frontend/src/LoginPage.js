@@ -121,7 +121,7 @@ export default function LoginPage({ onLoginSuccess }) {
 }
 
 const styles = {
-  container: { textAlign: "center", paddingTop: "4rem", color: "white", minHeight: "100vh", backgroundImage: "url('/back.jpeg')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" },
+  container: { textAlign: "center", paddingTop: "4rem", color: "white", minHeight: "100vh", backgroundImage: "url('/ab.png')", backgroundSize: "cover", backgroundPosition: "center", backgroundAttachment: "fixed" },
   logo: { color: "#e50914", fontSize: "2.5rem", marginBottom: "2rem" },
   card: { background: "#111", display: "inline-block", padding: "2rem", borderRadius: "12px", width: "320px", boxShadow: "0 0 10px rgba(255,255,255,0.06)" },
   form: { display: "flex", flexDirection: "column", gap: "1rem" },
